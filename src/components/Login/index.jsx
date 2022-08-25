@@ -27,7 +27,12 @@ export default function Login() {
   };
 
   const handleOk = async () => {
-    setShowForgot(false);
+    if(email){
+      const res =  await auth.sendPasswordResetEmail(email)
+      message.success("Gửi Email thành công");
+      setShowForgot(false);
+    }
+   
   };
 
   const handleCancel = () => {
@@ -37,30 +42,38 @@ export default function Login() {
     try {
       const { additionalUserInfo, user } =
         await auth.signInWithEmailAndPassword(email, password);
-      sendToEmail();
+      // sendToEmail();
     } catch (error) {
       message.error(error.message);
     }
   }
   const sendToEmail = () => {
-    const temp = auth.currentUser;
-    temp.sendEmailVerification().then(() => {
-      message.success("Gửi Email thành công");
-    });
+    auth.onAuthStateChanged(firebaseUser => {
+      if (firebaseUser) {
+          firebaseUser.sendEmailVerification().then(function() {
+            message.success("Gửi Email thành công");
+          }, function(error) {
+              console.log('not send Verification');
+          });
+      } else {
+          console.log('not logged in');
+          document.getElementById('btnLogout').style.display = 'none';
+      }
+  })
   };
   async function SignUp() {
     try {
       const { additionalUserInfo, user } =
         await auth.createUserWithEmailAndPassword(email, password);
-      sendToEmail();
-      addDocument("users", {
-        displayName: user.email,
-        email: user.email,
-        photoURL: user.photoURL,
-        uid: user.uid,
-        providerId: additionalUserInfo.providerId,
-        keywords: generateKeywords(user.email?.toLowerCase()),
-      });
+        sendToEmail();
+        addDocument("users", {
+          displayName: user.email,
+          email: user.email,
+          photoURL: user.photoURL,
+          uid: user.uid,
+          providerId: additionalUserInfo.providerId,
+          keywords: generateKeywords(user.email?.toLowerCase()),
+        });
     } catch (error) {
       message.error(error.message);
     }
