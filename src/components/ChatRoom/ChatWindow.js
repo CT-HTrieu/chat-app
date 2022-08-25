@@ -116,7 +116,6 @@ export default function ChatWindow() {
       });
     }
   };
-
   const condition = React.useMemo(
     () => ({
       fieldName: "roomId",
@@ -157,6 +156,21 @@ export default function ChatWindow() {
     temp.splice(index, 1);
     setFileList(temp);
   };
+  const getMember = (id)=>{
+   const temp =   members.filter((item)=>item.uid === id);
+      if(temp.length > 0){
+            return {
+               displayName: temp[0].displayName,
+               photoURL: temp[0].photoURL
+            }
+      }
+      else{
+        return {
+          displayName:"",
+          photoURL: ""
+       }
+      }
+  }
   return (
     <WrapperStyled>
       {selectedRoom.id ? (
@@ -191,9 +205,9 @@ export default function ChatWindow() {
           </HeaderStyled>
           <ContentStyled>
             <MessageListStyled ref={messageListRef}>
-              {messages.map((mes) => (
+              {messages.map((mes,index) => (
                 <Message
-                  key={mes.id}
+                  key={`${mes.id} ${index}`}
                   text={mes.text}
                   photoURL={photoURL}
                   displayName={displayName}
@@ -201,6 +215,7 @@ export default function ChatWindow() {
                   imageUrl={mes.imageUrl}
                   id={mes.id}
                   uid={mes.uid}
+                  members={getMember(mes.uid)}
                 />
               ))}
             </MessageListStyled>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect,useState } from "react";
 import { Avatar, Typography, Image, Popconfirm } from "antd";
 import styled from "styled-components";
 import { DeleteOutlined } from "@ant-design/icons";
@@ -40,29 +40,26 @@ function formatDate(seconds) {
 
 export default function Message({
   text,
-  displayName,
   createdAt,
-  photoURL,
   imageUrl,
   id,
   uid,
+  members
 }) {
   const temp = auth.currentUser;
-
   const remodeMessge = async (id) => {
     await db.collection("messages").doc(id).delete();
   };
   const confirm = () => {
         remodeMessge(id);
   };
-
   return (
     <WrapperStyled>
       <div>
-        <Avatar size="small" src={photoURL}>
-          {photoURL ? "" : displayName?.charAt(0)?.toUpperCase()}
+        <Avatar size="small" src={members.photoURL}>
+         {members && members.photoURL ? "" : members.displayName?.charAt(0).toUpperCase()} 
         </Avatar>
-        <Typography.Text className="author">{displayName}</Typography.Text>
+        <Typography.Text className="author"> {members.displayName}</Typography.Text>
         <Typography.Text className="date">
           {formatDate(createdAt?.seconds)}
         </Typography.Text>
