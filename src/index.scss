@@ -1,0 +1,45 @@
+.gallery {
+   border: 1px solid gray;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+    background-color: #f4f4f4;
+    .gallery-img-wrapper { 
+      position: relative;
+      display: inline-block; /* yan yana dur */
+      width: 150px; /*thumbnail max width*/
+      height: 150px; /*thumbnail max height*/
+      line-height: 150px; /* height ile aynı, img'nin vertical align middle'ının çalışması için */
+      text-align: center; /* içindeki resmi ortala */
+      vertical-align: top; /* wrapper'ları üste daya */
+      margin: 10px; /* birbirine yapışma */
+      /* şekil... */
+      border: 1px solid lightgray;
+      border-radius: 5px;
+      padding: 4px;
+      img {
+        /* eğer bu max'lar varsa, thumbnail max'tan daha büyük gelse dahi sorun değil */
+        max-width: 100%; /* üstteki div'e enden sığ */
+        max-height: 100%; /* üstteki div'e boydan sığ */
+        vertical-align: middle; /* dikey ortala */
+      }
+      .top {
+        position: absolute;
+        top: 10px;
+        right: 5px;
+        width: 15px;
+        cursor: pointer;
+      }
+    }
+  }
+  .ant-input-affix-wrapper{
+  input{
+    border: none !important;
+    width: 100%;
+  }
+input:focus{
+    border: none !important;
+  }
+}
+
+.ant-input-borderless:focus{
+  background: #fefefe;
+}

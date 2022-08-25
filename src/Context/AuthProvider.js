@@ -9,9 +9,8 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState({});
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(true);
-
   React.useEffect(() => {
-    const unsubscibed = auth.onAuthStateChanged((user) => {
+    const unsubscibed =  auth.onAuthStateChanged((user) => {
       if (user) {
         const { displayName, email, uid, photoURL } = user;
         setUser({
@@ -38,7 +37,7 @@ export default function AuthProvider({ children }) {
   }, [history]);
 
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={{ user, setUser}} >
       {isLoading ? <Spin style={{ position: 'fixed', inset: 0 }} /> : children}
     </AuthContext.Provider>
   );

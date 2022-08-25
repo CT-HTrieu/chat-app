@@ -1,12 +1,22 @@
-import { UserAddOutlined } from '@ant-design/icons';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { Button, Tooltip, Avatar, Form, Input, Alert } from 'antd';
-import Message from './Message';
-import { AppContext } from '../../Context/AppProvider';
-import { addDocument } from '../../firebase/services';
-import { AuthContext } from '../../Context/AuthProvider';
-import useFirestore from '../../hooks/useFirestore';
+import { UserAddOutlined, PlusOutlined } from "@ant-design/icons";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import {
+  Button,
+  Tooltip,
+  Avatar,
+  Form,
+  Input,
+  Alert,
+  Upload,
+  message,
+} from "antd";
+import Message from "./Message";
+import { AppContext } from "../../Context/AppProvider";
+import { addDocument } from "../../firebase/services";
+import { AuthContext } from "../../Context/AuthProvider";
+import useFirestore from "../../hooks/useFirestore";
+import Thumnail from "./Thumnail";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -76,7 +86,8 @@ export default function ChatWindow() {
   const {
     user: { uid, photoURL, displayName },
   } = useContext(AuthContext);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
+  const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
   const inputRef = useRef(null);
   const messageListRef = useRef(null);
@@ -86,15 +97,17 @@ export default function ChatWindow() {
   };
 
   const handleOnSubmit = () => {
-    addDocument('messages', {
+    const tempImageUrl = fileList.map((item) => {
+      return item.url;
+    });
+    addDocument("messages", {
       text: inputValue,
       uid,
-      photoURL,
       roomId: selectedRoom.id,
-      displayName,
+      imageUrl: tempImageUrl ? tempImageUrl : [],
     });
-
-    form.resetFields(['message']);
+    setFileList([]);
+    form.resetFields(["message"]);
 
     // focus to input again after submit
     if (inputRef?.current) {
@@ -106,15 +119,14 @@ export default function ChatWindow() {
 
   const condition = React.useMemo(
     () => ({
-      fieldName: 'roomId',
-      operator: '==',
+      fieldName: "roomId",
+      operator: "==",
       compareValue: selectedRoom.id,
     }),
     [selectedRoom.id]
   );
 
-  const messages = useFirestore('messages', condition);
-
+  const messages = useFirestore("messages", condition);
   useEffect(() => {
     // scroll to bottom after message changed
     if (messageListRef?.current) {
@@ -122,32 +134,54 @@ export default function ChatWindow() {
         messageListRef.current.scrollHeight + 50;
     }
   }, [messages]);
-
+  const createBase64Image = (fileobj) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        resolve(event.target.result);
+      };
+      reader.readAsDataURL(fileobj);
+    });
+  };
+  const handleChange = async (e) => {
+    const temp = { file: e, url: await createBase64Image(e) };
+    let bytes = temp.url.length;
+    if (bytes > 1048487) {
+      message.error("Upload thất bại");
+    } else {
+      setFileList([...fileList, temp]);
+    }
+  };
+  const remove = (index) => {
+    const temp = [...fileList];
+    temp.splice(index, 1);
+    setFileList(temp);
+  };
   return (
     <WrapperStyled>
       {selectedRoom.id ? (
         <>
           <HeaderStyled>
-            <div className='header__info'>
-              <p className='header__title'>{selectedRoom.name}</p>
-              <span className='header__description'>
+            <div className="header__info">
+              <p className="header__title">{selectedRoom.name}</p>
+              <span className="header__description">
                 {selectedRoom.description}
               </span>
             </div>
             <ButtonGroupStyled>
               <Button
                 icon={<UserAddOutlined />}
-                type='text'
+                type="text"
                 onClick={() => setIsInviteMemberVisible(true)}
               >
                 Mời
               </Button>
-              <Avatar.Group size='small' maxCount={2}>
+              <Avatar.Group size="small" maxCount={2}>
                 {members.map((member) => (
                   <Tooltip title={member.displayName} key={member.id}>
                     <Avatar src={member.photoURL}>
                       {member.photoURL
-                        ? ''
+                        ? ""
                         : member.displayName?.charAt(0)?.toUpperCase()}
                     </Avatar>
                   </Tooltip>
@@ -161,24 +195,38 @@ export default function ChatWindow() {
                 <Message
                   key={mes.id}
                   text={mes.text}
-                  photoURL={mes.photoURL}
-                  displayName={mes.displayName}
+                  photoURL={photoURL}
+                  displayName={displayName}
                   createdAt={mes.createdAt}
+                  imageUrl={mes.imageUrl}
+                  id={mes.id}
+                  uid={mes.uid}
                 />
               ))}
             </MessageListStyled>
+            <div>
+              <Thumnail files={fileList} remove={remove} />
+            </div>
             <FormStyled form={form}>
-              <Form.Item name='message'>
+              <Form.Item name="message">
                 <Input
+                
                   ref={inputRef}
                   onChange={handleInputChange}
                   onPressEnter={handleOnSubmit}
-                  placeholder='Nhập tin nhắn...'
+                  placeholder="Nhập tin nhắn..."
                   bordered={false}
-                  autoComplete='off'
+                  autoComplete="off"
                 />
               </Form.Item>
-              <Button type='primary' onClick={handleOnSubmit}>
+              <Upload
+                showUploadList={false}
+                beforeUpload={handleChange}
+                accept="image/*"
+              >
+                <Button>+</Button>
+              </Upload>
+              <Button type="primary" onClick={handleOnSubmit}>
                 Gửi
               </Button>
             </FormStyled>
@@ -186,8 +234,8 @@ export default function ChatWindow() {
         </>
       ) : (
         <Alert
-          message='Hãy chọn phòng'
-          type='info'
+          message="Hãy chọn phòng"
+          type="info"
           showIcon
           style={{ margin: 5 }}
           closable

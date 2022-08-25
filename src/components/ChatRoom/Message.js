@@ -1,7 +1,10 @@
-import React from 'react';
-import { Avatar, Typography } from 'antd';
-import styled from 'styled-components';
-import { formatRelative } from 'date-fns/esm';
+import React from "react";
+import { Avatar, Typography, Image, Popconfirm } from "antd";
+import styled from "styled-components";
+import { DeleteOutlined } from "@ant-design/icons";
+import { formatRelative } from "date-fns/esm";
+import { auth } from "../../firebase/config";
+import { db } from "../../firebase/config";
 
 const WrapperStyled = styled.div`
   margin-bottom: 10px;
@@ -23,7 +26,7 @@ const WrapperStyled = styled.div`
 `;
 
 function formatDate(seconds) {
-  let formattedDate = '';
+  let formattedDate = "";
 
   if (seconds) {
     formattedDate = formatRelative(new Date(seconds * 1000), new Date());
@@ -35,20 +38,60 @@ function formatDate(seconds) {
   return formattedDate;
 }
 
-export default function Message({ text, displayName, createdAt, photoURL }) {
+export default function Message({
+  text,
+  displayName,
+  createdAt,
+  photoURL,
+  imageUrl,
+  id,
+  uid,
+}) {
+  const temp = auth.currentUser;
+
+  const remodeMessge = async (id) => {
+    await db.collection("messages").doc(id).delete();
+  };
+  const confirm = () => {
+        remodeMessge(id);
+  };
+
   return (
     <WrapperStyled>
       <div>
-        <Avatar size='small' src={photoURL}>
-          {photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}
+        <Avatar size="small" src={photoURL}>
+          {photoURL ? "" : displayName?.charAt(0)?.toUpperCase()}
         </Avatar>
-        <Typography.Text className='author'>{displayName}</Typography.Text>
-        <Typography.Text className='date'>
+        <Typography.Text className="author">{displayName}</Typography.Text>
+        <Typography.Text className="date">
           {formatDate(createdAt?.seconds)}
         </Typography.Text>
       </div>
       <div>
-        <Typography.Text className='content'>{text}</Typography.Text>
+        <Typography.Text className="content">
+          {text}{" "}
+          {uid === temp.uid ? (
+            <Popconfirm
+              placement="right"
+              title={'Bạn chắc chắn muốn xoá'}
+              onConfirm={confirm}
+              okText="Yes"
+              cancelText="No"
+            >
+              <a style={{ position: "relative", top: "-2px" }}>
+                <DeleteOutlined />
+              </a>
+            </Popconfirm>
+          ) : (
+            ""
+          )}
+        </Typography.Text>
+        <div className="content">
+          {imageUrl &&
+            imageUrl.map((item) => {
+              return <Image width={100} height={100} src={item} />;
+            })}
+        </div>
       </div>
     </WrapperStyled>
   );
