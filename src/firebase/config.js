@@ -5,13 +5,13 @@ import 'firebase/auth';
 import 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDYEWul1sv1OylOeJc095h1djL9_JwSsJQ",
-  authDomain: "chat-app-6e584.firebaseapp.com",
-  projectId: "chat-app-6e584",
-  storageBucket: "chat-app-6e584.appspot.com",
-  messagingSenderId: "238440669011",
-  appId: "1:238440669011:web:cb5db594fda558d0c70ba6",
-  measurementId: "G-DT06Z0JBND"
+  apiKey: "AIzaSyC4RXlfsv7TB2CUmVKmSuPpr-VqqweK1Zw",
+  authDomain: "chat-realtime-f823e.firebaseapp.com",
+  projectId: "chat-realtime-f823e",
+  storageBucket: "chat-realtime-f823e.appspot.com",
+  messagingSenderId: "1097095430902",
+  appId: "1:1097095430902:web:36425260e1230c7b4762d7",
+  measurementId: "G-RFGCT8RDE7"
 };
 
 // Initialize Firebase
@@ -21,8 +21,8 @@ firebase.analytics();
 const auth = firebase.auth();
 const db = firebase.firestore();
 if (window.location.hostname === 'localhost') {
-     auth.useEmulator('http://localhost:9099');
-     db.useEmulator('localhost', '8080');
+    //  auth.useEmulator('http://localhost:9099');
+    //  db.useEmulator('localhost', '8080');
 }
 
 export { db, auth };

@@ -12,7 +12,7 @@ export default function AppProvider({ children }) {
   const {
     user: { uid },
   } = React.useContext(AuthContext);
-
+//array-contains
   const roomsCondition = React.useMemo(() => {
     return {
       fieldName: 'members',
@@ -22,7 +22,6 @@ export default function AppProvider({ children }) {
   }, [uid]);
 
   const rooms = useFirestore('rooms', roomsCondition);
-
   const selectedRoom = React.useMemo(
     () => rooms.find((room) => room.id === selectedRoomId) || {},
     [rooms, selectedRoomId]

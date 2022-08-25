@@ -19,7 +19,6 @@ const useFirestore = (collection, condition) => {
         condition.compareValue
       );
     }
-
     const unsubscribe = collectionRef.onSnapshot((snapshot) => {
       const documents = snapshot.docs.map((doc) => ({
         ...doc.data(),
