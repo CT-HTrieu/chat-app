@@ -3,10 +3,10 @@ import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
 import 'firebase/firestore';
-
+//chat-realtime-f823e.firebaseapp.com
 const firebaseConfig = {
   apiKey: "AIzaSyC4RXlfsv7TB2CUmVKmSuPpr-VqqweK1Zw",
-  authDomain: "chat-realtime-f823e.firebaseapp.com",
+  authDomain: "Hero",
   projectId: "chat-realtime-f823e",
   storageBucket: "chat-realtime-f823e.appspot.com",
   messagingSenderId: "1097095430902",
