@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useFirestore from '../hooks/useFirestore';
 import { AuthContext } from './AuthProvider';
-
+  
 export const AppContext = React.createContext();
 
 export default function AppProvider({ children }) {
